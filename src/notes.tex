@@ -1,0 +1,370 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{makeidx}
+\title{Fondamenti di Automatica}
+\author{Davide Calabrò}
+
+\newcommand{\arcangle}{%
+	\mathord{<\mspace{-9mu}\mathrel{)}\mspace{2mu}}%
+}
+
+\begin{document}
+	\maketitle
+	\pagenumbering{gobble}	
+	
+	\newpage
+	\section*{Appunti}
+	\subsection{Calcolo esplicito dei movimenti}
+	\paragraph{Sistemi L.T.I. a tempo continuo - Formula di Lagrange}
+	\begin{equation}
+		x(t) = x(t_0)e^{a(t-t_0)} + \int_{t_0}^t e^{a(t-\tau)} b u(\tau) d\tau
+	\end{equation}
+	\paragraph{Sistemi L.T.I. a tempo discreto}
+	\begin{equation}
+		y(t) = CA^tX_0 + C \sum_{i=1}^{t} A^{t-i} Bu(i-1) + Du(t)
+	\end{equation}
+	
+	\subsection{Analisi di stabilità del polinomio caratteristico}
+	\subsubsection{Sistemi L.T.I. a tempo continuo}
+	Dato il polinomio caratteristico
+	\begin{equation}
+		p(\lambda) = \det(A - \lambda I) = a_0\lambda^n + a_1 \lambda^{n-1} + ... + a_n
+	\end{equation}
+	allora
+	\subparagraph{Condizione necessaria perl'asintotica stabilità}
+	Tutti gli $a_i$ hanno lo stesso segno (condizione necessaria e sufficiente se $p(\lambda)$ ha ordine 2)
+	\subparagraph*{Criterio di Routh-Hurwitz}
+	\begin{enumerate}
+		\item Definizione della tabella di Routh
+			\begin{equation}
+				\begin{bmatrix}
+					a_0 && a_2 && a_4 && ... \\
+					a_1 && a_3 && a_5 && ... \\
+					h_1 && h_2 && h_3 && ... \\
+					k_1 && k_2 && k_3 && ... \\
+					l_1 && l_2 && l_3 && ...\\
+				\end{bmatrix}
+			\end{equation}
+			Definendo $l_i$ come:
+			\begin{equation}
+				l_i = -\frac{1}{k_1} \det\left(\begin{bmatrix}
+												h_1 && h_{i+1} \\ k_1 && k_{i+1}
+											\end{bmatrix}\right)
+			\end{equation}
+			E' necessario proseguire fino alla riga $n+1$. Inoltre se $\exists k_1 = 0$ non è possibile definire la riga successiva, dunque la tabella non è ben definita.
+		\item Il sistema è ASINTOTICAMENTE STABILE sse
+			\begin{itemize}
+				\item La tabella di Routh è ben definita
+				\item Tutti gli elementi della prima colonna hanno lo stesso segno				
+			\end{itemize}
+			Inoltre il numero di cambiamenti di segno è uguale al numero di autovalori con parte reale positiva.
+	\end{enumerate}
+
+	\subsubsection{Sistemi L.T.I a tempo discreto}
+	Dato il polinomio caratteristico
+	\begin{equation}
+		p_A(\lambda) = \det(\lambda I - A) = a_0\lambda^n+...+a_{n-1}\lambda+a_n
+	\end{equation}
+	\subparagraph{Teo 1} Condizione necessaria è che $\left|\frac{a_n}{a_0}\right| < 1$ e $\left|\frac{a_1}{a_0}\right| < n$
+	\subparagraph{Teo 2} Condizione necessaria è che $a_0p_A(\lambda = 1) = a_0(a_0+...+a_n) > 0$
+	\subparagraph{Teo 3} Condizione sufficiente è che $a_0>a_1>...>a_{n-1}>a_n$
+	\subparagraph{Teo 4} Condizione sufficiente è che $\sum_{i=1}^n \left|a_i\right| < \left|a_0\right|$
+	
+	\subparagraph{Criterio di Jury}
+	E' condizione necessaria e sufficiente
+	\begin{enumerate}
+		\item Costruzione della tabella
+			\begin{equation}
+				\begin{bmatrix}
+					a_0 && a_1 && ... && a_{n-1} && a_n \\
+					h_1 && h_2 && ... && h_\nu \\
+					l_1 && l_2 && ... \\
+				\end{bmatrix}
+			\end{equation}
+			con
+			\begin{equation}
+				l_i = \frac{1}{h_1}\det
+				\begin{bmatrix}
+					h_1 && h_{\nu-i+1} \\
+					h_\nu && h_i
+				\end{bmatrix}
+				\mbox{ con } i=1,...,\nu-1
+			\end{equation}
+			Da qui ottengo una tabella triangolare. Se inoltre nel calcolo di $l_i$ ho un $h_1 = 0$ allora la tabella non è ben definita. Ci si ferma quando arriviamo a $n+1$ righe.
+		\item Il sistema è AS. STABILE  sse
+			\begin{itemize}
+				\item La tabella è ben definita
+				\item Gli elementi della prima colonna hanno lo stesso segno
+			\end{itemize}
+	\end{enumerate}
+	\newpage
+	\subsection{Sistemi non lineari tempo invarianti}
+	\subsubsection{Linearizzazione di sistemi a tempo continuo}
+	\begin{enumerate}
+		\item Definire un movimento di equilibrio intorno al quale linearizzare. Dunque prendiamo $u(t) = \bar{u}$ e cerchiamo i punti $\bar{x}$ per i quali $f(\bar{x}, \bar{u}) = 0$
+		\item Calcolo le matrici
+			\begin{align}
+				\frac{\partial f}{\partial x}(\bar{x}, \bar{u}) = A(\bar{x}, \bar{u}) &&
+				\frac{\partial f}{\partial u}(\bar{x}, \bar{u}) = B(\bar{x}, \bar{u}) \\
+				\frac{\partial g}{\partial x}(\bar{x}, \bar{u}) = C(\bar{x}, \bar{u}) &&
+				\frac{\partial g}{\partial u}(\bar{x}, \bar{u}) = D(\bar{x}, \bar{u})
+			\end{align}
+		\item Descrivo le dinamiche del sistema, definendo
+			\begin{align}
+				\delta x = x - \bar{x} && \delta y = y - \bar{y} && \delta u = u - \bar{u}
+			\end{align}
+			\begin{equation}
+				\begin{cases}
+					\delta\dot{x} = A(\bar{x}, \bar{u})\delta x + B(\bar{x}, \bar{u})\delta u \\
+					\delta\dot{y} = C(\bar{x}, \bar{u})\delta x + D(\bar{x}, \bar{u})\delta u
+				\end{cases}
+			\end{equation}
+	\end{enumerate}	
+	\paragraph{Stabilità degli equilibri}
+	\begin{itemize}
+		\item Se tutti gli autovalori di $A(\bar{x}, \bar{u})$ hanno $Re(\lambda_i) < 0$ allora il movimento di equilibrio $\bar{x}$ è ASINTOTICAMENTE STABILE (ricordando che si tratta di una stabilità locale).
+		\item Se $\exists \lambda_i : Re(\lambda_i) > 0$ l'equilibrio $\bar{x}$ è instabile 
+		\item Se $\forall \lambda_i : Re(\lambda_i) \leq 0$ ed $\exists \lambda_i : Re(\lambda_i) = 0$, non posso concludere nulla. In questo caso uso il metodo grafico, ovvero considero la funzione
+		\begin{equation}
+			\dot{x} = f(x, \bar{u}) = 
+			\begin{cases}
+				\mbox{se } f(x, \bar{u}) > 0 \rightarrow \dot{x} > 0 \\
+				\mbox{se } f(x, \bar{u}) < 0 \rightarrow \dot{x} < 0 \\
+			\end{cases}
+		\end{equation}
+	\end{itemize}
+	\subsubsection{Linearizzazione di sistemi a tempo discreto}
+	Il procedimento è il medesimo e si ottiene un sistema linearizzato del tipo
+	\begin{equation}
+	\begin{cases}
+	\delta\dot{x}(t+1) = A(\bar{x}, \bar{u})\delta x(t) + B(\bar{x}, \bar{u})\delta u(t) \\
+	\delta\dot{y}(t+1) = C(\bar{x}, \bar{u})\delta x(t) + D(\bar{x}, \bar{u})\delta u(t)
+	\end{cases}
+	\end{equation}
+	\paragraph{Stabilità degli equilibri}
+	Utilizziamo il criterio degli autovalori.\\
+	Detti $\lambda_i$ per $i=1,...,\mu$ autovalori di $A$
+	\begin{itemize}
+		\item Se $\left|\lambda_i\right| < 1$, allora l'equilibrio $(\bar{x}, \bar{u})$ è AS. STABILE
+		\item Se $\exists \lambda_i : \left|\lambda_i\right|>1$, l'equilibrio è INSTABILE
+		\item Negli altri casi non si può dire nulla
+	\end{itemize}
+
+	\newpage
+	\subsection{Trasformata di Laplace e funzioni di trasferimento}
+	\subsubsection{Trasformate notevoli}
+	\begin{center}
+		\begin{tabular}{l | r}
+			$\frac{1}{s}$ & $sca(t)$ \\
+			$\frac{1}{s^2}$ & $ram(t)$ \\
+			$\frac{1}{s^3}$ & $par(t)$ \\
+			$\frac{s}{s^2 + \omega^2}$ & $cos(\omega t)$ \\
+			$\frac{\omega}{s^2 + \omega^2}$ & $sin(\omega t)$ \\
+			$\frac{1}{s + \alpha}$ & $e^{-\alpha t}sca(t)$ \\
+		\end{tabular}	
+	\end{center}
+	\subsubsection{Proprietà dell'antitrasformata}
+	\paragraph{Teorema della risposta finale}
+	Data $F(s)$
+	\begin{itemize}
+		\item grado $D(s) >$ grado $N(s)$
+		\item i poli di $F(s)$ sono o nulli o hanno $Re(s) < 0$
+	\end{itemize}
+	sotto queste ipotesi vale:
+	\begin{equation}
+		\lim_{t\to\infty} f(t) = \lim_{s\to 0} sF(s)
+	\end{equation}
+	\paragraph{Teorema della risposta iniziale}
+	Data $F(s)$, se grado $D(s) >$ grado $N(s)$ allora vale:
+	\begin{equation}
+	\lim_{t\to 0} f(t) = \lim_{s\to\infty} sF(s)
+	\end{equation}
+	\subsubsection{Applicazione di Laplace e funzione di trasferimento}
+	Dato un generico sistema del tipo
+	\begin{equation}
+		\begin{cases}
+			\dot{x} = Ax + Bu\\
+			\dot{y} = Cx + Du
+		\end{cases}
+	\end{equation}
+	applicando la trasformata di Laplace otteniamo
+	\begin{align}		
+		X(s) = (sI-A)^{-1}X_0 + (sI-A)^{-1}BU(s) \\
+		Y(s) = C(sI-A)^{-1}X_0 + (C(sI-A)^{-1}B+D)U(s) \\
+		G(s) = C(sI-A)^{-1}B+D		
+	\end{align}
+	dove $G(s)$ è la funzione di trasferimento ed esprime il legame tra il segnale d'ingresso e quello d'uscita.
+	\subsubsection{Schemi a blocchi}
+	Date $G_1(s)$ e $G_2(s)$ funzioni di trasferimento di due sistemi $S_1$ e $S_2$, in base a come questi sono collegati, otteniamo un $G_{eq}(s)$ che è pari a
+	\begin{itemize}
+		\item Collegamento in serie: $G_{eq}(s) = G_1(s)G_2(s)$
+		\item Collegamento in parallelo: $G_{eq}(s) = G_1(s) + G_2(s)$
+		\item Retroazione: $G_{eq}(s) = \frac{G_1(s)}{1 + G_1(s)G_2(s)} = \frac{\mbox{f. di andata}}{1 + L(s)}$
+	\end{itemize}
+
+	\subsection{Tracciamento dei diagrammi di Bode}
+	\begin{equation}
+		G(s) = \frac{\mu}{s^g}
+		\frac{\prod_i (1+s\tau_i)}{\prod_i (1+sT_i)}
+		\frac{\prod_i (1+2\xi_i \frac{s}{\alpha_{ni}} + \frac{s^2}{\alpha^2_{ni}})}{\prod_i (1+2\xi_i \frac{s}{\omega_{ni}} + \frac{s^2}{\omega^2_{ni}})}
+	\end{equation}
+	\begin{equation}
+	G(j\omega) = \frac{\mu}{(j\omega)^g}
+	\frac{\prod_i (1+j\omega\tau_i)}{\prod_i (1+j\omega T_i)}
+	\frac{\prod_i (1+2\xi_i \frac{j\omega}{\alpha_{ni}} - \frac{\omega^2}{\alpha^2_{ni}})}{\prod_i (1+2\xi_i \frac{j\omega}{\omega_{ni}} - \frac{\omega^2}{\omega^2_{ni}})}
+	\end{equation}
+	\subsubsection{Diagramma del modulo}
+	\begin{flalign*}
+		\left|G(j\omega)\right|_{dB} = 
+		20\log_{10} \left|\mu\right| -
+		20\log_{10} \left|\omega\right| + \\
+		\sum_i 20\log_{10} \left|1 + j\omega\tau_i\right| -
+		\sum_i 20\log_{10} \left|1 + j\omega T_i\right| + \\
+		\sum_i 20\log_{10} \left| 1+2\xi_i \frac{j\omega}{\alpha_{ni}} - \frac{\omega^2}{\alpha^2_{ni}} \right| -
+		20\log_{10} \left| 1+2\xi_i \frac{j\omega}{\omega_{ni}} - \frac{\omega^2}{\omega^2_{ni}} \right|
+	\end{flalign*}
+	\paragraph{Regole di tracciamento}
+	\begin{enumerate}
+		\item Tratto iniziale (prima di qualsiasi polo o zero) è una retta avente pendenza $-20g \mbox{ } dB/dec$, che nel punto $\omega_0 = 1$ assume il valore $20log_{10} \left|\mu\right|$
+		\item In corrispondenza di:
+		\begin{itemize}
+			\item $\omega = \frac{1}{\tau_i}$ (zeri), la pendenza $\uparrow \mbox{ } m * 20 \mbox{ } dB/dec$
+			\item $\omega = \frac{1}{T_i}$ (poli), la pendenza $\downarrow \mbox{ } m * 20 \mbox{ } dB/dec$
+			\item $\omega = \omega_n$ (zeri C/C), la pendenza $\uparrow \mbox{ } 2 * m * 20 \mbox{ } dB/dec$
+			\item $\omega = \omega_n$ (poli C/C), la pendenza $\downarrow \mbox{ } 2 * m * 20 \mbox{ } dB/dec$
+		\end{itemize}
+	\end{enumerate}
+	\subsubsection{Diagramma della fase}
+	\begin{align*}
+		\arcangle{G(j\omega)} = \arcangle\mu - g90^o\\
+		+ \sum_i \arcangle(1+j\omega\tau_i) - \sum_i \arcangle(1+j\omega T_i)\\
+		+ \sum_i \arcangle( 1+2\xi_i \frac{j\omega}{\alpha_{ni}} - \frac{\omega^2}{\alpha^2_{ni}}) - 
+		\sum_i \arcangle(1+2\xi_i \frac{j\omega}{\omega_{ni}} - \frac{\omega^2}{\omega^2_{ni}})		
+	\end{align*}
+	\paragraph{Regole di tracciamento}
+	\begin{enumerate}
+		\item Il tratto iniziale, fino al primo zero e polo, ha valore $\arcangle\mu-g90^o$
+		\item çLa fase, in corrispondenza di:
+		\begin{itemize}
+			\item Polo reale:
+				\subitem $T_i > 0 \implies \downarrow 90^o$
+				\subitem $T_i < 0 \implies \uparrow 90^o$
+			\item Zero reale:
+				\subitem $\tau_i > 0 \implies \uparrow 90^o$
+				\subitem $\tau_i < 0 \implies \downarrow 90^o$
+			\item Poli C/C:
+				\subitem $\xi > 0 \implies \downarrow 180^o$
+				\subitem $\xi < 0 \implies \uparrow 180^o$
+			\item Zeri C/C:
+				\subitem $\xi > 0 \implies \uparrow 180^o$
+				\subitem $\xi < 0 \implies \downarrow 180^o$
+		\end{itemize}
+	\end{enumerate}
+
+	\subsection{Stabilità dei sistemi retroazionati}
+	\paragraph{Criterio di Nyquist}
+	Si definisca $P$ come il numero di poli di $L(s)$ con $Re > 0$. Si tracci il diagramma di Nyquist di $L(s)$ e si definisca con $N$ il numero di giri che il diagramma compie intorno al punto $-1$:
+	\begin{itemize}
+		\item positivamente se compiuti in senso antiorario
+		\item negativamente se compiuti in senso orario
+	\end{itemize}
+	Se il diagramma passa per il punto $-1$, $N$ non è ben definita.\\
+	Il sistema è AS. STABILE sse $N=P$
+	\paragraph{Criterio di Bode}
+	Sotto le ipotesi
+	\begin{enumerate}
+		\item $L$ strettamente propria
+		\item $P=0$
+		\item Il diagramma di Bode attraversa una e una sola volta l'asse a $0dB$, da sopra a sotto perche per l'asintotica stabilità deve valere  $\lim_{\omega\to\infty} L(j\omega) = -\infty$
+	\end{enumerate}
+	il sistema ad anello chiuso è AS. STABILE sse
+	\begin{equation}
+		\begin{cases}
+			\mu > 0\\
+			\varphi_m > 0
+		\end{cases}
+	\end{equation}
+	
+	\newpage
+	\subsection{Prestazioni dei sistemi di controllo}
+	\subsubsection{Prestazioni statiche}
+	Definiamo le funzioni
+	\begin{align*}
+		F(s) = \frac{L(s)}{1+L(s)} && S(s) = \frac{1}{1+L(s)} && Q(s) = \frac{R(s)}{1+L(s)}
+	\end{align*}
+	otteniamo una tabella per la relazione tra i vari segnali
+	\begin{center}
+		\begin{tabular}{c | c | c | c}
+			\hline
+			$y(t)$ & $F(s)$ & $S(s)$ & $-F(s)$ \\ \hline
+			$e(t)$ & $S(s)$ & $-S(s)$ & $F(s)$ \\ \hline
+			$u(t)$ & $Q(s)$ & $-Q(s)$ & $-Q(s)$ \\ \hline
+			/	   & $y^o(t)$ & $d(t)$ & $n(t)$ \\ \hline
+		\end{tabular}
+	\end{center}
+	\subsubsection{Prestazioni dinamiche}
+	Se vogliamo dei requisiti su
+	\begin{align*}
+		T_{ass} = T_s && S\% \leq  s
+	\end{align*}
+	otteniamo delle specifiche su $\varphi_m$ e $\omega_c$
+	\paragraph{Esempio pratico}
+	Se voglio una $S\% \leq  s$ calcolo
+	\begin{align}
+		100e^{\frac{-\xi_F\pi}{\sqrt{1-\xi_F}}} \implies \xi_F \geq \sqrt{\frac{\rho}{1+\rho}} &&
+		\mbox{ dove }
+		\rho = \frac{\ln^2(\frac{s}{100})}{\pi^2}
+	\end{align}
+	%Sapendo che
+	%\begin{equation}
+	%	\xi_F \cong \frac{\varphi_m}{100} \implies \varphi_m \geq 100\xi_F = \varphi_{m,min}
+	%\end{equation}
+	Considero poi due casi, in modo da distinguere i casi di approssimazione di ordine 1 e quella di ordine 2
+	\begin{itemize}
+		\item Se $\varphi_m \leq 75^o$
+			\begin{equation}
+				T_{ass} \cong \frac{5}{\xi_F \omega_c} \leq T_s \implies \omega_c\cdot\varphi_m \geq \frac{5 \cdot 100}{s}
+			\end{equation}
+		\item Se $\varphi_m > 75^o$
+			\begin{equation}
+				T_{ass} \cong \frac{5}{\omega_c} \leq s \implies \omega_c \geq \frac{s}{5}
+			\end{equation}
+	\end{itemize}
+
+	\newpage
+	\subsection{Regolatore discretizzato}
+	\paragraph{Passaggio da R(s) a R*(s)}
+	Ci sono tre modi per passare da una funzione di un regolatore a tempo continuo a una a tempo discreto:
+	\begin{itemize}
+		\item Eulero Esplicito
+			\begin{equation}
+				s = \frac{z-1}{T_s}
+			\end{equation}
+		\item Eulero Implicito
+			\begin{equation}
+				s = \frac{z-1}{zT_s}
+			\end{equation}
+		\item Tustin
+			\begin{equation}
+				s = \frac{2}{T_s}\frac{z-1}{z+1}
+			\end{equation}
+	\end{itemize}
+	\paragraph{Variazione del margine di fase}
+	\begin{equation}
+		\Delta\varphi_m = -\frac{T_s}{2}\cdot\omega_c\cdot\frac{180}{\pi}
+	\end{equation}
+	\paragraph{Calcolo del tempo di campionamento per il rispetto di un margine di fase reale}
+	Considerando:
+	\begin{itemize}
+		\item Il ritardo corrispondente alla cascata campionatore+mantenitore pari a $\tau_S = T_S/2$, il corrispondente contributo al margine di fase (in gradi) è $-\tau_S\cdot\omega_c\cdot\frac{180}{\pi}$
+		\item Il contributo del margine di fase (in gradi) dato dal ritardo di elaborazione è pari a $-\tau_{EL}\omega_c\frac{180}{\pi}$
+		\item Il filtro passabasso antialiasing ha banda $[0, \omega_{AA}]$ con $\omega_{AA}>>\omega_c$. Lo sfasamento conferito dal filtro al margine di fase è pari a $-\arctan(\omega_c/\omega_{AA})$
+	\end{itemize}
+	Da qui otteniamo
+	\begin{equation}
+		\varphi_m^{REALE} = \varphi_m^o - (\frac{T_S}{2} + \tau_{EL})\cdot\omega_c\frac{180}{\pi} - \arctan(\omega_c/\omega_{AA})
+	\end{equation}
+	Sostituendo tutti i valori e quindi anche il margine di fase reale desiderato si ottiene il valore $T_S$.
+\end{document}
